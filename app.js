@@ -30,6 +30,7 @@ const PROJECT_CHOD5 = "Factory&Warehouse Chodthanawat 5";
 const PROJECT_NAME = PROJECT_CHOD2;
 const DEFAULT_GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/1I5Z_MjvqTZlkb7NJJMieP0_SKcNmervyP7w_KCHRpac/edit";
 const SHEET_URL_STORAGE_KEY = "warehouseDashboard.googleSheetUrl";
+const SHEET_SYNC_TIMEOUT_MS = 25000;
 const PROJECT_SHEETS = [
   PROJECT_CHOD1,
   PROJECT_CHOD2,
@@ -1247,7 +1248,9 @@ function storeSheetUrl(url) {
 function getConfiguredSheetUrl() {
   const currentUrl = els.sheetUrlInput.value.trim();
   const storedUrl = getStoredSheetUrl().trim();
-  return currentUrl || storedUrl || DEFAULT_GOOGLE_SHEET_URL;
+  if (isGoogleSheetUrl(currentUrl)) return currentUrl;
+  if (isGoogleSheetUrl(storedUrl)) return storedUrl;
+  return DEFAULT_GOOGLE_SHEET_URL;
 }
 
 function initializeSheetSource() {
@@ -1270,13 +1273,17 @@ async function connectSheetUrl(sourceUrl = getConfiguredSheetUrl()) {
     setDataStatus("Syncing Google Sheet...");
     const sheetNames = await loadGoogleSheetNames(url).catch(() => PROJECT_SHEETS);
     const uniqueSheetNames = uniquePreserveOrder(sheetNames.length ? sheetNames : PROJECT_SHEETS);
-    const results = await Promise.allSettled(uniqueSheetNames.map(async (sheetName) => {
-      const rows = await loadGoogleSheetRows(url, sheetName);
-      return { sheetName, rows: mapObjectRows(rows, sheetName) };
-    }));
-    const synced = results
-      .filter((result) => result.status === "fulfilled" && result.value.rows.length)
-      .map((result) => result.value);
+    const synced = [];
+    for (const sheetName of uniqueSheetNames) {
+      setDataStatus(`Syncing Google Sheet... ${sheetName}`);
+      try {
+        const rows = await loadGoogleSheetRows(url, sheetName);
+        const mappedRows = mapObjectRows(rows, sheetName);
+        if (mappedRows.length) synced.push({ sheetName, rows: mappedRows });
+      } catch (error) {
+        console.warn(`Skipped sheet "${sheetName}"`, error);
+      }
+    }
     if (!synced.length) throw new Error("No unit rows found");
 
     projectSheets = uniqueSheetNames;
@@ -1304,7 +1311,7 @@ function loadGoogleSheetNames(url) {
     const timeout = setTimeout(() => {
       cleanup();
       reject(new Error("Google Sheet tab list timed out"));
-    }, 12000);
+    }, SHEET_SYNC_TIMEOUT_MS);
     const cleanup = () => {
       clearTimeout(timeout);
       delete window[callbackName];
@@ -1347,7 +1354,7 @@ function loadGoogleSheetRows(url, sheetName) {
     const timeout = setTimeout(() => {
       cleanup();
       reject(new Error(`Google Sheet sync timed out: ${sheetName}`));
-    }, 12000);
+    }, SHEET_SYNC_TIMEOUT_MS);
     const cleanup = () => {
       clearTimeout(timeout);
       delete window[callbackName];

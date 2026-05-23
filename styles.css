@@ -1155,8 +1155,12 @@ th {
   }
 
   .topbar h2 {
-    font-size: clamp(18px, 6vw, 24px);
+    width: 100%;
+    overflow: hidden;
+    font-size: clamp(13px, 3.8vw, 18px);
     line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .topbar-tools {
