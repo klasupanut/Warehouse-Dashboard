@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Warehouse Dashboard</title>
+    <link rel="stylesheet" href="./styles.css?v=20260524-1" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-logo">
+            <img src="./assets/chod-white.png" alt="CHOD" />
+          </div>
+          <div>
+            <p id="controlTitle" class="eyebrow">MARKETTING CONTROL</p>
+            <h1>Warehouse Dashboard</h1>
+          </div>
+        </div>
+
+        <section class="panel">
+          <h2>Legend</h2>
+          <div id="legend" class="legend"></div>
+        </section>
+
+        <section class="panel occupancy-panel">
+          <span>OCCUPANCY</span>
+          <strong><b id="occupancyRate">0</b>%</strong>
+        </section>
+
+        <section class="panel filter-panel">
+          <div class="panel-heading">
+            <h2>Filters</h2>
+            <button id="clearFiltersBtn" type="button">Clear</button>
+          </div>
+          <label>
+            Project
+            <select id="projectFilter">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>
+            Block
+            <select id="phaseFilter">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>
+            Status
+            <select id="statusFilter">
+              <option value="all">All</option>
+            </select>
+          </label>
+          <label>
+            Search
+            <input id="searchBox" type="search" placeholder="Unit, customer, owner" />
+          </label>
+        </section>
+
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <h2 id="projectTitle">Factory&amp;Warehouse Chodthanawat 2</h2>
+          </div>
+          <div class="topbar-tools">
+            <div class="mode-switch" role="tablist" aria-label="Dashboard mode">
+              <button id="opModeBtn" type="button" role="tab" aria-selected="false" data-mode="op">MOP MODE</button>
+              <button id="marketingModeBtn" class="is-active" type="button" role="tab" aria-selected="true" data-mode="marketing">MKT MODE</button>
+            </div>
+            <div class="live-chip">
+              <span></span>
+              <strong>Live</strong>
+              <small id="lastUpdated">--</small>
+            </div>
+          </div>
+        </header>
+
+        <section class="map-layout">
+          <article class="map-card">
+            <div class="section-title">
+              <h3>MASTER PLAN</h3>
+              <div class="map-actions">
+                <small id="visibleCount">0 visible units</small>
+                <button id="fitVisibleBtn" type="button">Fit Visible</button>
+              </div>
+            </div>
+
+            <div class="map-viewport" aria-label="Interactive property layout plan">
+              <svg id="unitMap" viewBox="174.78 71.56 1441.63 1068.87" role="img" aria-labelledby="mapTitle">
+                <title id="mapTitle">CHOD Factory and Warehouse Bangna KM.16 unit map</title>
+                <defs>
+                  <linearGradient id="siteBackdrop" x1="0" x2="1" y1="0" y2="1">
+                    <stop offset="0%" stop-color="#071016" />
+                    <stop offset="52%" stop-color="#0a1820" />
+                    <stop offset="100%" stop-color="#061018" />
+                  </linearGradient>
+                  <radialGradient id="siteGlow" cx="58%" cy="36%" r="58%">
+                    <stop offset="0%" stop-color="#31d8ff" stop-opacity="0.16" />
+                    <stop offset="48%" stop-color="#31d8ff" stop-opacity="0.05" />
+                    <stop offset="100%" stop-color="#31d8ff" stop-opacity="0" />
+                  </radialGradient>
+                  <pattern id="techGrid" width="80" height="80" patternUnits="userSpaceOnUse">
+                    <path d="M80 0H0V80" fill="none" stroke="#31d8ff" stroke-opacity="0.11" stroke-width="1" />
+                    <path d="M40 0V80M0 40H80" fill="none" stroke="#84f5ff" stroke-opacity="0.045" stroke-width="1" />
+                    <circle cx="40" cy="40" r="2.1" fill="#31d8ff" fill-opacity="0.13" />
+                  </pattern>
+                </defs>
+                <rect x="0" y="0" width="2048" height="1376" class="site-bg" />
+                <rect x="0" y="0" width="2048" height="1376" class="site-glow" />
+                <rect x="0" y="0" width="2048" height="1376" class="tech-grid" />
+                <image id="masterPlanImage" href="./pdf-plan.svg?v=20260513-2" x="-20" y="-810" width="2146.56" height="3194.88" preserveAspectRatio="xMidYMid meet" transform="translate(0 1376) scale(1 -1) rotate(-270 1024 688)" />
+                <g id="unitLayer"></g>
+                <g id="unitLabelLayer"></g>
+              </svg>
+              <div id="allProjectDashboard" class="map-state all-project-dashboard" hidden></div>
+              <div id="projectPlanPending" class="map-state project-plan-pending" hidden></div>
+            </div>
+            <div id="mappingIssues" class="mapping-issues" hidden></div>
+          </article>
+
+          <aside class="right-rail">
+            <section class="panel status-summary-panel">
+              <h2>Status</h2>
+              <div class="metric-grid side-metrics">
+                <article class="metric">
+                  <span>Total Units</span>
+                  <strong id="totalUnits">0</strong>
+                </article>
+                <article class="metric available">
+                  <span>Available</span>
+                  <strong id="availableUnits">0</strong>
+                </article>
+                <article class="metric sold">
+                  <span>Occupied</span>
+                  <strong id="soldUnits">0</strong>
+                </article>
+                <article class="metric transfer">
+                  <span>Under Construction</span>
+                  <strong id="readyUnits">0</strong>
+                </article>
+              </div>
+            </section>
+
+            <section class="panel upload-panel data-source-panel">
+              <h2>Data Source</h2>
+              <div class="sheet-import">
+                <label>
+                  Google Sheet URL
+                  <input id="sheetUrlInput" type="url" inputmode="url" placeholder="Configured Google Sheet URL" />
+                </label>
+                <button id="connectSheetBtn" class="secondary-button" type="button">Sync Google Sheet</button>
+                <small id="dataStatus">Configured sheet is ready. Press Refresh to sync latest data.</small>
+              </div>
+            </section>
+          </aside>
+
+          <aside class="detail-card" id="detailCard" hidden>
+            <p class="eyebrow">Selected Unit</p>
+            <h3 id="detailTitle">Select a unit</h3>
+            <dl class="detail-list">
+              <div><dt>Status</dt><dd id="detailStatus">-</dd></div>
+              <div><dt>Block</dt><dd id="detailPhase">-</dd></div>
+              <div><dt>Warehouse Area</dt><dd id="detailArea">-</dd></div>
+              <div><dt>Office Area</dt><dd id="detailOfficeArea">-</dd></div>
+              <div><dt>Load Capacity</dt><dd id="detailLoadCapacity">-</dd></div>
+              <div><dt>Customer</dt><dd id="detailCustomer">-</dd></div>
+              <div><dt>Transfer Date</dt><dd id="detailTransfer">-</dd></div>
+              <div><dt>Contract Term</dt><dd id="detailContractTerm">-</dd></div>
+              <div><dt>Contract End Date</dt><dd id="detailContractEnd">-</dd></div>
+            </dl>
+          </aside>
+        </section>
+
+        <section class="table-card">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Unit Register</p>
+              <h3>Visible Unit List</h3>
+            </div>
+            <div class="register-actions" aria-label="Unit register actions">
+              <button id="refreshRegisterBtn" type="button">Refresh</button>
+              <button id="exportCsvBtn" type="button">Export CSV</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Unit</th>
+                  <th>Block</th>
+                  <th>Type</th>
+                  <th>Warehouse Area</th>
+                  <th>Status</th>
+                  <th>Customer</th>
+                  <th>Transfer</th>
+                  <th>Owner</th>
+                </tr>
+              </thead>
+              <tbody id="unitTable"></tbody>
+            </table>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="./cad-units.js?v=20260521-2"></script>
+    <script src="./rama2-units.js?v=20260521-2"></script>
+    <script src="./km1-units.js?v=20260523-2"></script>
+    <script src="./chod5-units.js?v=20260523-4"></script>
+    <script src="./app.js?v=20260523-6"></script>
+  </body>
+</html>
