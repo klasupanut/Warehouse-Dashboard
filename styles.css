@@ -552,6 +552,7 @@ button:disabled {
 
 .map-viewport.is-zoomed {
   overflow: scroll;
+  overscroll-behavior: contain;
   cursor: grab;
 }
 
@@ -1267,9 +1268,36 @@ th {
   .detail-card {
     right: 10px;
     bottom: 10px;
-    width: calc(100vw - 20px);
-    max-height: 76vh;
-    padding: 12px;
+    width: min(330px, calc(100vw - 20px));
+    max-height: 58vh;
+    padding: 10px;
+  }
+
+  .detail-card h3 {
+    margin-bottom: 3px;
+    font-size: 20px;
+  }
+
+  .detail-card .eyebrow {
+    margin-bottom: 4px;
+  }
+
+  .detail-list {
+    gap: 4px;
+  }
+
+  .detail-list div {
+    gap: 6px;
+    padding: 6px 0;
+  }
+
+  .detail-list dt {
+    font-size: 10px;
+  }
+
+  .detail-list dd {
+    font-size: 12px;
+    line-height: 1.25;
   }
 }
 
@@ -1311,5 +1339,10 @@ th {
 
   #unitMap {
     height: 380px;
+  }
+
+  .detail-card {
+    width: min(300px, calc(100vw - 20px));
+    max-height: 54vh;
   }
 }

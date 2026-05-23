@@ -1462,7 +1462,7 @@ function dragViewport(event) {
 }
 
 function handleViewportWheel(event) {
-  if (mapZoomMode !== "visible") return;
+  if (!els.mapViewport.classList.contains("is-zoomed")) return;
   if (event.shiftKey && !event.deltaX) {
     event.preventDefault();
     els.mapViewport.scrollLeft += event.deltaY;
